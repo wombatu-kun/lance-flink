@@ -50,6 +50,7 @@ import org.apache.flink.types.RowKind;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -260,11 +261,36 @@ public class LanceDynamicTableSource implements ScanTableSource,
         else if (funcDef == BuiltInFunctionDefinitions.LIKE) {
             return buildComparisonFilter(args, "LIKE");
         }
-        // IN (not supported yet, requires more complex handling)
+        // IN: args[0] is the field reference, args[1..n] are literal values
+        else if (funcDef == BuiltInFunctionDefinitions.IN) {
+            return buildInFilter(args);
+        }
         // BETWEEN (not supported yet)
 
         // Unsupported functions, return null
         return null;
+    }
+
+    /**
+     * Build IN filter expression: {@code field IN (v1, v2, ...)}.
+     * Returns null if the field side is not a reference, the list is empty,
+     * or any value cannot be rendered as a literal — pushdown is all-or-nothing
+     * so Lance never sees a partial predicate.
+     */
+    private String buildInFilter(List<ResolvedExpression> args) {
+        if (args.size() < 2 || !(args.get(0) instanceof FieldReferenceExpression)) {
+            return null;
+        }
+        String fieldName = ((FieldReferenceExpression) args.get(0)).getName();
+        List<String> values = new ArrayList<>();
+        for (int i = 1; i < args.size(); i++) {
+            String value = extractLiteralValue(args.get(i));
+            if (value == null) {
+                return null;
+            }
+            values.add(value);
+        }
+        return fieldName + " IN (" + String.join(", ", values) + ")";
     }
 
     /**
@@ -289,10 +315,15 @@ public class LanceDynamicTableSource implements ScanTableSource,
             fieldName = ((FieldReferenceExpression) right).getName();
             value = extractLiteralValue(left);
             // For asymmetric operators, need to swap operator
-            if (">".equals(operator)) operator = "<";
-            else if ("<".equals(operator)) operator = ">";
-            else if (">=".equals(operator)) operator = "<=";
-            else if ("<=".equals(operator)) operator = ">=";
+            if (">".equals(operator)) {
+                operator = "<";
+            } else if ("<".equals(operator)) {
+                operator = ">";
+            } else if (">=".equals(operator)) {
+                operator = "<=";
+            } else if ("<=".equals(operator)) {
+                operator = ">=";
+            }
         }
 
         if (fieldName != null && value != null) {
@@ -367,6 +398,14 @@ public class LanceDynamicTableSource implements ScanTableSource,
      */
     public LanceOptions getOptions() {
         return options;
+    }
+
+    /**
+     * Lance-side filter strings accumulated by {@link #applyFilters(List)}, in acceptance order.
+     * Exposed so callers can inspect what was actually pushed down versus left in Flink.
+     */
+    public List<String> getFilters() {
+        return Collections.unmodifiableList(filters);
     }
 
     /**
