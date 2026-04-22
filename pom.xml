@@ -257,6 +257,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
+                    <!-- @{argLine} preserves the JaCoCo agent; the add-opens flag lets
+                         Arrow reach java.nio off-heap memory on JDK 9+ (build runs on JDK 11+). -->
+                    <argLine>@{argLine} --add-opens=java.base/java.nio=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 
