@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://flink.apache.org/img/logo/png/1000/flink_squirrel_1000.png" alt="Flink Logo" width="100"/>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://lancedb.github.io/lance/assets/lance_logo.png" alt="Lance Logo" width="100"/>
+  <img width="257" alt="Lance Logo" src="https://user-images.githubusercontent.com/917119/199353423-d3e202f7-0269-411d-8ff2-e747e419e492.png">
 </p>
 
 <h1 align="center">Flink Connector Lance</h1>
