@@ -265,6 +265,10 @@ public class LanceReadOptimizationsTest {
             SupportsFilterPushDown.Result result = source.applyFilters(Collections.singletonList(inExpr));
 
             assertEquals(1, result.getAcceptedFilters().size(), "IN predicate should be accepted");
+            assertEquals(
+                    Collections.singletonList("status IN ('active', 'pending', 'completed')"),
+                    source.getFilters(),
+                    "IN predicate should be rendered as a Lance SQL IN clause with quoted string literals");
         }
 
         @Test
