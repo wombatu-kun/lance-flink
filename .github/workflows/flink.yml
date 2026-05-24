@@ -2,7 +2,7 @@ name: Flink CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths-ignore:
       - '**.md'
       - 'docs/**'
