@@ -2,15 +2,32 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+dependency-reduced-pom.xml
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf
+.idea/CopilotChatHistory.xml
+.idea/CopilotChatTabs.xml
+.idea/encodings.xml
+.idea/MarsCodeWorkspaceAppSettings.xml
+.idea/material_theme_project_new.xml
+.idea/material_theme_*.xml
 *.iws
 *.iml
 *.ipr
+
+### IntelliJ IDEA / Eclipse build output ###
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
 ### Eclipse ###
 .apt_generated
@@ -39,3 +56,9 @@ build/
 
 ### CodeBuddy ###
 .codebuddy/
+
+### Subagent Configuration ###
+.agents/
+
+### Lance test data (generated at runtime) ###
+test-data/
